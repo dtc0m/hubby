@@ -13,11 +13,11 @@
 [data-theme="dark"] { --ice:#0b1a22; --paper:#0f222c; --ink:#ebfdff; --muted:#9bb3bc; --muted-2:#7a9aa5; --line:#1c3a46; --line-strong:#2a4d5a; --azure:#4a9eff; --azure-deep:#7fc7ff; --azure-soft:#12304a; --azure-wash:rgba(74,158,255,0.12); }
 *{box-sizing:border-box} body{margin:0;background:var(--ice);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6;overflow-x:hidden} a{color:inherit;text-decoration:none}
 .app{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
-.sidebar{position:sticky;top:0;height:100vh;background:rgba(255,255,255,0.6);backdrop-filter:blur(18px);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 14px;gap:14px}
+.sidebar{position:sticky;top:0;height:100vh;background:var(--paper);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 14px;gap:14px}
 .sidebar-top{display:flex;align-items:center;justify-content:space-between;padding:4px 6px}
 .brand{font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:-0.03em;color:var(--ink)} .brand span{color:var(--azure)}
 .sidebar-nav{display:flex;flex-direction:column;gap:2px;flex:1}
-.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-family:var(--font-display);font-size:14px;font-weight:500;color:var(--muted)}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--muted)}
 .sidebar-nav a[aria-current="page"]{background:var(--azure-wash);color:var(--ink)}
 .sidebar-nav a .nav-icon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;flex:none}
 .sidebar-nav a .badge{margin-left:auto;background:var(--azure);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px}
@@ -63,7 +63,7 @@
 .pv-media{background:linear-gradient(135deg,var(--azure-soft),var(--ice));border-radius:8px;display:grid;place-items:center;color:var(--muted-2);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0;aspect-ratio:16/9}
 .pv-actions{display:flex;gap:14px;font-size:11px;color:var(--muted-2);margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
 .pv-empty{color:var(--muted);font-size:13px;padding:20px;text-align:center}
-.btn{position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border:1px solid transparent;border-radius:11px;font-family:var(--font-display);font-size:14px;font-weight:500;white-space:nowrap;transition:color .28s var(--ease),border-color .28s var(--ease),background-color .28s var(--ease),transform .18s var(--ease)}
+.btn{position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border:1px solid transparent;border-radius:11px;font-family:var(--font-display);font-size:14px;font-weight:600;white-space:nowrap;transition:color .28s var(--ease),border-color .28s var(--ease),background-color .28s var(--ease),transform .18s var(--ease)}
 .btn::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,#1268e8 0%,rgba(18,104,232,0.94) 42%,rgba(18,104,232,0.4) 76%,rgba(18,104,232,0) 100%);transform:translateY(101%);transition:transform .5s var(--ease)}
 .btn:hover::before{transform:translateY(0)} .btn:active{transform:translateY(1px)}
 .btn--primary{background:var(--ink);border-color:var(--ink);color:#fff} .btn--ghost{background:var(--paper);border-color:var(--line-strong);color:var(--ink)} .btn--sm{height:36px;padding:0 14px;font-size:13px;border-radius:9px}
@@ -78,7 +78,7 @@
 <div class="app">
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-top">
-    <a class="brand" href="index.html">HSW<span>Hub</span></a>
+    <a class="brand" href="index.html">Hubby</a>
     <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">☾</button>
   </div>
   <div class="account-switcher">
@@ -92,7 +92,7 @@
     <a href="accounts.html"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M17 11a3 3 0 1 0 0-6"/></svg>Accounts</a>
     <a href="settings.html"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
   </nav>
-  <div class="sidebar-foot"><span>HSW Hub</span><a href="../index.html">HSW site ↗</a></div>
+  <div class="sidebar-foot"><span>Hubby</span><a href="../index.html">HSW site ↗</a></div>
 </aside>
 
 <main class="main">
