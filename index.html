@@ -152,6 +152,7 @@ const ACCOUNTS = [
   ];
   const POSTS = [];
 
+try { if (localStorage.getItem('hub.version') !== '2') { localStorage.removeItem('hub.connected'); localStorage.removeItem('hub.activeAccount'); localStorage.setItem('hub.version','2'); } } catch(e){}
 window.HUB = { PLATFORMS, ACCOUNTS, POSTS };
 window.HUB.getActiveAccount = function(){ const id = localStorage.getItem('hub.activeAccount') || ACCOUNTS[0].id; return ACCOUNTS.find(a=>a.id===id) || ACCOUNTS[0]; };
 window.HUB.setActiveAccount = function(id){ localStorage.setItem('hub.activeAccount', id); };
