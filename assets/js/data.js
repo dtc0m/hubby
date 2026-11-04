@@ -19,13 +19,7 @@
     { id:'whatsapp', name:'WhatsApp Business', handle:'', limit:1024, color:'#25D366', media:['image','video','file'] }
   ];
 
-  const ACCOUNTS = [
-    { id:'hsw', name:'Hill Sim Works', handle:'@hillsimworks', email:'hello@hillsimworks.com', color:'#0b2630', socials:[], inbox:[] },
-    { id:'prysm', name:'PRYSM Motorsport', handle:'@prysmmotorsport', email:'team@prysmmotorsport.com', color:'#071a22', socials:[], inbox:[] },
-    { id:'adxd', name:'ADXD Design', handle:'@adxd.design', email:'studio@adxd.design', color:'#1268e8', socials:[], inbox:[] },
-    { id:'v1', name:'V1 Photo Co.', handle:'@v1photoco', email:'bookings@v1photoco.com', color:'#48646f', socials:[], inbox:[] },
-    { id:'hrw', name:'HRW', handle:'@hrw', email:'info@hrw.com', color:'#a8781a', socials:[], inbox:[] }
-  ];
+  const ACCOUNTS = [];
 
   const POSTS = [];
 
@@ -33,8 +27,9 @@
   try { if (localStorage.getItem('hub.version') !== '2') { localStorage.removeItem('hub.connected'); localStorage.removeItem('hub.activeAccount'); localStorage.setItem('hub.version','2'); } } catch(e){}
   window.HUB = { PLATFORMS, ACCOUNTS, POSTS };
   window.HUB.getActiveAccount = function () {
-    const id = localStorage.getItem('hub.activeAccount') || ACCOUNTS[0].id;
-    return ACCOUNTS.find(a=>a.id===id) || ACCOUNTS[0];
+    const id = localStorage.getItem('hub.activeAccount');
+    if (id) { const a = ACCOUNTS.find(x=>x.id===id); if (a) return a; }
+    return ACCOUNTS.length ? ACCOUNTS[0] : null;
   };
   window.HUB.setActiveAccount = function (id) { localStorage.setItem('hub.activeAccount', id); };
   window.HUB.platform = function (id) { return PLATFORMS.find(p=>p.id===id); };

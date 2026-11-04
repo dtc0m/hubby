@@ -2,6 +2,11 @@
 (function () {
   const HUB = window.HUB;
   const acc = HUB.getActiveAccount();
+  if(!acc){
+    const main = document.querySelector('main') || document.body;
+    main.innerHTML = '<div class="card" style="max-width:560px;margin:40px auto;text-align:center"><h2 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:8px">No account yet</h2><p style="color:var(--muted);margin-bottom:16px">Add an account on the Accounts page to start composing.</p><a class="btn btn--primary" href="accounts.html">Go to Accounts</a></div>';
+    return;
+  }
   const textarea = document.getElementById('composeText');
   const charCount = document.getElementById('charCount');
   const platGrid = document.getElementById('platGrid');

@@ -9,9 +9,18 @@
   const themeToggle = document.getElementById('themeToggle');
 
   function currentAccount(){ return HUB.getActiveAccount(); }
+  function hasAccount(){ return !!currentAccount(); }
 
   function renderAccountSwitcher(){
     const acc = currentAccount();
+    if(!acc){
+      if(accountBtn){ accountBtn.innerHTML = `<span class="acc-avatar" style="background:var(--muted)">+</span><span class="acc-info"><b>No account</b><small>Add one to start</small></span>`; }
+      if(accountMenu){ accountMenu.innerHTML = '<div class="pv-empty" style="padding:12px">No accounts yet. Add one on the Accounts page.</div>'; }
+      document.querySelectorAll('[data-account-name]').forEach(el=>el.textContent='No account');
+      document.querySelectorAll('[data-account-handle]').forEach(el=>el.textContent='');
+      document.querySelectorAll('[data-account-email]').forEach(el=>el.textContent='');
+      return;
+    }
     if(accountBtn){
       accountBtn.innerHTML = `
         <span class="acc-avatar" style="background:${acc.color}">${acc.name.charAt(0)}</span>

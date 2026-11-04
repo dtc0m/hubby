@@ -33,7 +33,7 @@
 <main class="main">
   <div class="page-head">
     <div><h1>Accounts</h1><p>Switch accounts and manage linked socials. Active account drives inbox and composer.</p></div>
-    <button class="btn btn--ghost">+ Add account</button>
+    <button class="btn btn--ghost" id="addAccountBtn">+ Add account</button>
   </div>
   <div class="grid grid-2" id="accountCards"></div>
 </main>
@@ -45,19 +45,20 @@
 <script>
 (function(){
   const HUB=window.HUB;
-  const activeId = HUB.getActiveAccount().id;
+  const activeAcc = HUB.getActiveAccount();
+  const activeId = activeAcc ? activeAcc.id : null;
   // restore connected state
   try{ const saved=JSON.parse(localStorage.getItem('hub.connected')||'{}'); Object.keys(saved).forEach(aid=>{ const acc=HUB.ACCOUNTS.find(a=>a.id===aid); if(!acc) return; Object.keys(saved[aid]).forEach(pid=>{ const s=acc.socials.find(x=>x.platform===pid); if(s) s.connected=saved[aid][pid]; }); }); }catch(e){}
   const cards=document.getElementById('accountCards');
   function render(){
     cards.innerHTML = HUB.ACCOUNTS.map(a=>`
-      <div class="account-card ${a.id===HUB.getActiveAccount().id?'is-active':''}">
+      <div class="account-card ${a.id===activeId?'is-active':''}">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <div style="display:flex;align-items:center;gap:10px">
             <span class="acc-avatar" style="background:${a.color};width:40px;height:40px;border-radius:10px;font-size:16px;display:grid;place-items:center;color:#fff;font-family:var(--font-display);font-weight:600">${a.name.charAt(0)}</span>
             <div><b style="font-family:var(--font-display);font-size:1.05rem">${a.name}</b><div style="font-size:12px;color:var(--muted-2)">${a.handle} · ${a.email}</div></div>
           </div>
-          ${a.id!==HUB.getActiveAccount().id?`<button class="btn btn--ghost btn--sm" data-switch="${a.id}">Switch</button>`:`<span class="chip">Active</span>`}
+          ${a.id!==activeId?`<button class="btn btn--ghost btn--sm" data-switch="${a.id}">Switch</button>`:`<span class="chip">Active</span>`}
         </div>
         <div style="font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-2);margin:10px 0 6px">Linked socials</div>
         ${a.socials.map(s=>`
@@ -85,6 +86,27 @@
       });
     });
   }
+  const addBtn=document.getElementById('addAccountBtn');
+  if(addBtn){ addBtn.addEventListener('click',()=>{
+    const name=prompt('Account name (e.g. your brand):');
+    if(!name) return;
+    const handle=prompt('Handle (e.g. @yourbrand):')||'';
+    const email=prompt('Email:')||'';
+    const id='acc_'+Date.now();
+    const color='#'+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0');
+    const acc={id,name,handle,email,color,socials:[],inbox:[]};
+    HUB.ACCOUNTS.push(acc);
+    try{ localStorage.setItem('hub.accounts', JSON.stringify(HUB.ACCOUNTS)); }catch(e){}
+    HUB.setActiveAccount(id);
+    location.reload();
+  }); }
+  try{
+    const saved=JSON.parse(localStorage.getItem('hub.accounts')||'null');
+    if(Array.isArray(saved) && saved.length){
+      HUB.ACCOUNTS.length=0;
+      saved.forEach(a=>HUB.ACCOUNTS.push(a));
+    }
+  }catch(e){}
   render();
 })();
 </script>

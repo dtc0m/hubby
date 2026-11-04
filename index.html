@@ -146,15 +146,13 @@ const PLATFORMS = [
   { id:'telegram', name:'Telegram', handle:'@', limit:4096, color:'#26A5E4' },
   { id:'whatsapp', name:'WhatsApp Business', handle:'', limit:1024, color:'#25D366' }
 ];
-const ACCOUNTS = [
-    { id:'hsw', name:'Hill Sim Works', handle:'@hillsimworks', email:'hello@hillsimworks.com', color:'#0b2630', socials:[], inbox:[] },
-    { id:'prysm', name:'PRYSM Motorsport', handle:'@prysmmotorsport', email:'team@prysmmotorsport.com', color:'#071a22', socials:[], inbox:[] }
-  ];
+const ACCOUNTS = [];
   const POSTS = [];
+
 
 try { if (localStorage.getItem('hub.version') !== '2') { localStorage.removeItem('hub.connected'); localStorage.removeItem('hub.activeAccount'); localStorage.setItem('hub.version','2'); } } catch(e){}
 window.HUB = { PLATFORMS, ACCOUNTS, POSTS };
-window.HUB.getActiveAccount = function(){ const id = localStorage.getItem('hub.activeAccount') || ACCOUNTS[0].id; return ACCOUNTS.find(a=>a.id===id) || ACCOUNTS[0]; };
+window.HUB.getActiveAccount = function(){ const id = localStorage.getItem('hub.activeAccount'); if(id){const a=ACCOUNTS.find(x=>x.id===id); if(a) return a;} return ACCOUNTS.length?ACCOUNTS[0]:null; };
 window.HUB.setActiveAccount = function(id){ localStorage.setItem('hub.activeAccount', id); };
 window.HUB.platform = function(id){ return PLATFORMS.find(p=>p.id===id); };
 
@@ -170,6 +168,13 @@ window.HUB.platform = function(id){ return PLATFORMS.find(p=>p.id===id); };
   function currentAccount(){ return HUB.getActiveAccount(); }
   function renderAccountSwitcher(){
     const acc = currentAccount();
+    if(!acc){
+      if(accountBtn){ accountBtn.innerHTML = `<span class="acc-avatar" style="background:var(--muted)">+</span><span class="acc-info"><b>No account</b><small>Add one to start</small></span>`; }
+      if(accountMenu){ accountMenu.innerHTML = '<div class="pv-empty" style="padding:12px">No accounts yet. Add one on the Accounts page.</div>'; }
+      document.querySelectorAll('[data-account-name]').forEach(el=>el.textContent='No account');
+      document.querySelectorAll('[data-account-handle]').forEach(el=>el.textContent='');
+      return;
+    }
     if(accountBtn){ accountBtn.innerHTML = `<span class="acc-avatar" style="background:${acc.color}">${acc.name.charAt(0)}</span><span class="acc-info"><b>${acc.name}</b><small>${acc.handle}</small></span><svg class="acc-caret" width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`; }
     if(accountMenu){ accountMenu.innerHTML = HUB.ACCOUNTS.map(a=>`<button class="acc-option ${a.id===acc.id?'is-active':''}" data-account-id="${a.id}"><span class="acc-avatar" style="background:${a.color}">${a.name.charAt(0)}</span><span class="acc-info"><b>${a.name}</b><small>${a.handle}</small></span></button>`).join(''); accountMenu.querySelectorAll('[data-account-id]').forEach(btn=>btn.addEventListener('click',()=>{ HUB.setActiveAccount(btn.dataset.accountId); location.reload(); })); }
     document.querySelectorAll('[data-account-name]').forEach(el=>el.textContent=acc.name);
@@ -182,7 +187,7 @@ window.HUB.platform = function(id){ return PLATFORMS.find(p=>p.id===id); };
   document.documentElement.setAttribute('data-theme', storedTheme);
   if(themeToggle){ themeToggle.addEventListener('click', ()=>{ const cur=document.documentElement.getAttribute('data-theme'); const next=cur==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',next); localStorage.setItem('hub.theme',next); themeToggle.textContent=next==='dark'?'☀':'☾'; }); themeToggle.textContent=storedTheme==='dark'?'☀':'☾'; }
   const acc = currentAccount();
-  const unread = acc.inbox.filter(e=>!e.read && e.folder==='inbox').length;
+  const unread = acc ? acc.inbox.filter(e=>!e.read && e.folder==='inbox').length : 0;
   const badge = document.getElementById('inboxBadge');
   if(badge){ badge.textContent=unread; badge.hidden=unread===0; }
   renderAccountSwitcher();
@@ -193,6 +198,7 @@ window.HUB.platform = function(id){ return PLATFORMS.find(p=>p.id===id); };
 <script>
 (function(){
   const HUB=window.HUB; const acc=HUB.getActiveAccount();
+  if(!acc){ document.getElementById('recentPosts').innerHTML='<div style="color:var(--muted);font-size:13px">No account yet. <a href="accounts.html" style="color:var(--azure)">Add one</a> to get started.</div>'; document.getElementById('linkedSocials').innerHTML=''; ['statPosts','statPlatforms','statUnread','statReach'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='0';}); return; }
   document.getElementById('statPosts').textContent = HUB.POSTS.filter(p=>p.accountId===acc.id).length;
   document.getElementById('statPlatforms').textContent = acc.socials.filter(s=>s.connected).length;
   document.getElementById('statUnread').textContent = acc.inbox.filter(e=>!e.read && e.folder==='inbox').length;
