@@ -114,6 +114,19 @@
   render();
 })();
 </script>
+<div id="addAccountModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(7,26,34,0.5);align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--paper);border-radius:var(--r-lg);max-width:420px;width:100%;padding:24px;box-shadow:var(--shadow-lg)">
+    <h3 style="font-family:var(--font-display);font-size:1.2rem;margin-bottom:6px">Add an account</h3>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:16px">Create a new brand account to manage.</p>
+    <div class="field" style="margin-bottom:10px"><label>Account name</label><input class="input" id="newAccName" placeholder="e.g. My Brand"></div>
+    <div class="field" style="margin-bottom:10px"><label>Handle</label><input class="input" id="newAccHandle" placeholder="@mybrand"></div>
+    <div class="field" style="margin-bottom:16px"><label>Email</label><input class="input" id="newAccEmail" placeholder="hello@mybrand.com"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn--ghost btn--sm" id="closeAddModal">Cancel</button>
+      <button class="btn btn--primary btn--sm" id="createAccountBtn">Create account</button>
+    </div>
+  </div>
+</div>
 <div id="oauthModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(7,26,34,0.5);align-items:center;justify-content:center;padding:20px">
   <div style="background:var(--paper);border-radius:var(--r-lg);max-width:420px;width:100%;padding:24px;box-shadow:var(--shadow-lg)">
     <div id="oauthStep1">
@@ -237,6 +250,33 @@
     if(cb) cb.addEventListener('click', openModal);
   }
   render();
+})();
+</script>
+<script>
+(function(){
+  const modal=document.getElementById('addAccountModal');
+  const btn=document.getElementById('addAccountBtn');
+  const closeBtn=document.getElementById('closeAddModal');
+  const createBtn=document.getElementById('createAccountBtn');
+  function open(){ if(modal) modal.style.display='flex'; }
+  function close(){ if(modal) modal.style.display='none'; }
+  if(btn) btn.addEventListener('click', open);
+  if(closeBtn) closeBtn.addEventListener('click', close);
+  if(modal) modal.addEventListener('click', e=>{ if(e.target===modal) close(); });
+  if(createBtn) createBtn.addEventListener('click', ()=>{
+    const name=document.getElementById('newAccName').value.trim();
+    const handle=document.getElementById('newAccHandle').value.trim();
+    const email=document.getElementById('newAccEmail').value.trim();
+    if(!name){ alert('Account name is required.'); return; }
+    const id='acc_'+Date.now();
+    const color='#'+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0');
+    const acc={id,name,handle,email,color,socials:[],inbox:[]};
+    window.HUB.ACCOUNTS.push(acc);
+    try{ localStorage.setItem('hub.accounts', JSON.stringify(window.HUB.ACCOUNTS)); }catch(e){}
+    window.HUB.setActiveAccount(id);
+    close();
+    location.reload();
+  });
 })();
 </script>
 </body>
