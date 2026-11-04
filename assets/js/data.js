@@ -34,7 +34,7 @@
   const POSTS = [];
 
   // clear stale saved state from previous mock version
-  try { if (localStorage.getItem('hub.version') !== '5') { localStorage.removeItem('hub.connected'); localStorage.removeItem('hub.activeAccount'); localStorage.removeItem('hub.accounts'); localStorage.setItem('hub.version','5'); } } catch(e){}
+  try { if (localStorage.getItem('hub.version') !== '6') { localStorage.removeItem('hub.connected'); localStorage.removeItem('hub.activeAccount'); localStorage.removeItem('hub.accounts'); localStorage.setItem('hub.version','6'); } } catch(e){}
   window.HUB = { PLATFORMS, ACCOUNTS, POSTS };
   window.HUB.getActiveAccount = function () {
     const id = localStorage.getItem('hub.activeAccount');
