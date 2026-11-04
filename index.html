@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HSW Hub — Dashboard</title>
+<meta name="theme-color" content="#EBFDFF">
+<style>
+/* HSW Hub inlined styles */
+@font-face { font-family:'General Sans'; src:url('assets/fonts/general-sans-400.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'General Sans'; src:url('assets/fonts/general-sans-500.woff2') format('woff2'); font-weight:500; font-style:normal; font-display:swap; }
+@font-face { font-family:'General Sans'; src:url('assets/fonts/general-sans-600.woff2') format('woff2'); font-weight:600; font-style:normal; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('assets/fonts/inter-var.woff2') format('woff2-variations'); font-weight:100 900; font-style:normal; font-display:swap; }
+:root { --ice:#ebfdff; --ice-soft:#f4feff; --paper:#ffffff; --ink:#071a22; --ink-2:#0b2630; --ink-3:#10343f; --muted:#48646f; --muted-2:#5b7480; --line:#dcedf1; --line-strong:#c6e2e9; --azure:#1268e8; --azure-deep:#0b54c4; --azure-soft:#e7f1fe; --azure-wash:rgba(18,104,232,0.08); --gold:#a8781a; --font-display:'General Sans','Segoe UI',system-ui,sans-serif; --font-body:'Inter','Segoe UI',system-ui,sans-serif; --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:28px; --shadow-sm:0 1px 0 rgba(7,26,34,0.02),0 10px 24px -18px rgba(7,26,34,0.3); --shadow-md:0 1px 0 rgba(7,26,34,0.03),0 24px 48px -32px rgba(7,26,34,0.38); --shadow-lg:0 1px 0 rgba(7,26,34,0.04),0 48px 96px -56px rgba(7,26,34,0.55); --ease:cubic-bezier(0.22,0.61,0.36,1); --gutter:clamp(16px,3vw,32px); }
+[data-theme="dark"] { --ice:#0b1a22; --ice-soft:#0f222c; --paper:#0f222c; --ink:#ebfdff; --ink-2:#dcedf1; --muted:#9bb3bc; --muted-2:#7a9aa5; --line:#1c3a46; --line-strong:#2a4d5a; --azure:#4a9eff; --azure-deep:#7fc7ff; --azure-soft:#12304a; --azure-wash:rgba(74,158,255,0.12); }
+*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--ice);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-width:100%} h1,h2,h3,h4,p{margin:0} a{color:inherit;text-decoration:none} button,input,select,textarea{font:inherit;color:inherit} button{cursor:pointer}
+.app{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;background:rgba(255,255,255,0.6);backdrop-filter:blur(18px);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 14px;gap:14px;z-index:50}
+.sidebar-top{display:flex;align-items:center;justify-content:space-between;padding:4px 6px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:-0.03em;color:var(--ink)}
+.brand span{color:var(--azure)}
+.sidebar-nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-family:var(--font-display);font-size:14px;font-weight:500;color:var(--muted);transition:background .2s,color .2s}
+.sidebar-nav a:hover{background:var(--azure-wash);color:var(--ink)}
+.sidebar-nav a[aria-current="page"]{background:var(--azure-wash);color:var(--ink)}
+.sidebar-nav a .nav-icon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sidebar-nav a .badge{margin-left:auto;background:var(--azure);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px}
+.sidebar-nav a .badge[hidden]{display:none}
+.sidebar-foot{display:flex;align-items:center;justify-content:space-between;padding:8px 6px;border-top:1px solid var(--line);font-size:11px;color:var(--muted-2)}
+.theme-btn{background:none;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:14px;color:var(--ink)}
+.account-switcher{position:relative}
+#accountBtn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+#accountBtn:hover{border-color:var(--azure)}
+.acc-avatar{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;font-family:var(--font-display);font-weight:600;font-size:14px;flex:none}
+.acc-info{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1}
+.acc-info b{font-family:var(--font-display);font-size:13px;font-weight:600;letter-spacing:-0.01em;color:var(--ink)}
+.acc-info small{font-size:11px;color:var(--muted-2)}
+.acc-caret{color:var(--muted-2);flex:none}
+.account-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);padding:6px;z-index:60;max-height:360px;overflow:auto}
+.account-menu[hidden]{display:none}
+.acc-option{width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;border:none;background:none;text-align:left}
+.acc-option:hover{background:var(--azure-wash)}
+.acc-option.is-active{background:var(--azure-wash)}
+.main{padding:24px var(--gutter) 48px;min-width:0;width:100%}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.page-head h1{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:600;letter-spacing:-0.03em;color:var(--ink)}
+.page-head p{color:var(--muted);font-size:14px;margin-top:4px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:20px}
+.grid{display:grid;gap:16px} .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))} .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))} .grid-4{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+@media(max-width:900px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+@media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:-280px;top:0;transition:left .25s var(--ease)}.sidebar.is-open{left:0}.sidebar-backdrop{position:fixed;inset:0;background:rgba(7,26,34,0.4);z-index:40;opacity:0;pointer-events:none;transition:opacity .25s}.sidebar-backdrop.is-open{opacity:1;pointer-events:auto}.menu-toggle{position:fixed;top:14px;left:14px;z-index:70;width:42px;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--paper);display:grid;place-items:center}.main{padding-top:64px}.page-head{flex-direction:column;align-items:flex-start}}
+.btn{position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border:1px solid transparent;border-radius:11px;font-family:var(--font-display);font-size:14px;font-weight:500;letter-spacing:-0.01em;white-space:nowrap;transition:color .28s var(--ease),border-color .28s var(--ease),background-color .28s var(--ease),transform .18s var(--ease)}
+.btn::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,#1268e8 0%,rgba(18,104,232,0.94) 42%,rgba(18,104,232,0.4) 76%,rgba(18,104,232,0) 100%);transform:translateY(101%);transition:transform .5s var(--ease)}
+.btn:hover::before,.btn:focus-visible::before{transform:translateY(0)} .btn:active{transform:translateY(1px)}
+.btn--primary{background:var(--ink);border-color:var(--ink);color:#fff} .btn--ghost{background:var(--paper);border-color:var(--line-strong);color:var(--ink)} .btn--sm{height:36px;padding:0 14px;font-size:13px;border-radius:9px}
+.stat-tile{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:16px}
+.stat-tile .v{font-family:var(--font-display);font-size:1.7rem;font-weight:600;letter-spacing:-0.03em;color:var(--ink)}
+.stat-tile .l{font-size:10.5px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted-2);margin-top:4px}
+.hero-card{background:linear-gradient(135deg,var(--azure-soft),var(--paper));border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;margin-bottom:18px}
+.hero-card h2{font-family:var(--font-display);font-size:1.4rem;font-weight:600;letter-spacing:-0.03em;margin-bottom:6px}
+.hero-card p{color:var(--muted);font-size:14px}
+.menu-toggle{display:none}
+@media(max-width:760px){.menu-toggle{display:grid}}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:10px;font-weight:600;letter-spacing:0.06em;background:var(--azure-wash);color:var(--azure-deep)}
+.post-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.post-row:last-child{border-bottom:none}
+.post-row .txt{flex:1;font-size:13px;color:var(--ink)}
+.acc-social{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.acc-social:last-child{border-bottom:none}
+.social-dot{width:10px;height:10px;border-radius:50%;flex:none}
+</style>
+</head>
+<body>
+<button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<div class="sidebar-backdrop" id="backdrop"></div>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <a class="brand" href="index.html">HSW<span>Hub</span></a>
+    <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">☾</button>
+  </div>
+  <div class="account-switcher">
+    <button id="accountBtn" aria-haspopup="menu"></button>
+    <div id="accountMenu" class="account-menu" hidden></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Dashboard</a>
+    <a href="compose.html"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Compose</a>
+    <a href="inbox.html"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 8l9 6 9-6M3 8v10h18V8M3 8l9-4 9 4"/></svg>Inbox<span class="badge" id="inboxBadge" hidden>0</span></a>
+    <a href="accounts.html"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M17 11a3 3 0 1 0 0-6"/></svg>Accounts</a>
+    <a href="settings.html"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+  </nav>
+  <div class="sidebar-foot"><span>HSW Hub</span><a href="../index.html">HSW site ↗</a></div>
+</aside>
+
+<main class="main">
+  <div class="page-head">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome back. Active account: <b data-account-name></b> <span data-account-handle></span></p>
+    </div>
+    <a class="btn btn--primary" href="compose.html">New post</a>
+  </div>
+  <div class="hero-card">
+    <h2>Post everywhere. Read everything. Switch accounts in one click.</h2>
+    <p>HSW Hub keeps your socials and inboxes for every brand account in one place. Compose once, preview across all platforms, publish.</p>
+  </div>
+  <div class="grid grid-4" style="margin-bottom:20px">
+    <div class="stat-tile"><div class="v" id="statPosts">0</div><div class="l">Posts this week</div></div>
+    <div class="stat-tile"><div class="v" id="statPlatforms">0</div><div class="l">Connected platforms</div></div>
+    <div class="stat-tile"><div class="v" id="statUnread">0</div><div class="l">Unread emails</div></div>
+    <div class="stat-tile"><div class="v" id="statReach">0</div><div class="l">Total followers</div></div>
+  </div>
+  <div class="grid grid-2">
+    <div class="card">
+      <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:12px">Recent posts</h3>
+      <div id="recentPosts"></div>
+    </div>
+    <div class="card">
+      <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:12px">Linked socials</h3>
+      <div id="linkedSocials"></div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+/* inlined data.js */
+const PLATFORMS = [
+  { id:'x', name:'X', handle:'@', limit:280, color:'#000000' },
+  { id:'instagram', name:'Instagram', handle:'@', limit:2200, color:'#E4405F' },
+  { id:'facebook', name:'Facebook', handle:'', limit:63206, color:'#1877F2' },
+  { id:'linkedin', name:'LinkedIn', handle:'', limit:3000, color:'#0A66C2' },
+  { id:'tiktok', name:'TikTok', handle:'@', limit:2200, color:'#000000' },
+  { id:'youtube', name:'YouTube', handle:'@', limit:5000, color:'#FF0000' },
+  { id:'threads', name:'Threads', handle:'@', limit:500, color:'#000000' },
+  { id:'pinterest', name:'Pinterest', handle:'', limit:500, color:'#E60023' },
+  { id:'bluesky', name:'Bluesky', handle:'@', limit:300, color:'#0085FF' },
+  { id:'mastodon', name:'Mastodon', handle:'@', limit:500, color:'#6364FF' },
+  { id:'reddit', name:'Reddit', handle:'u/', limit:40000, color:'#FF4500' },
+  { id:'snapchat', name:'Snapchat', handle:'', limit:250, color:'#FFFC00' },
+  { id:'tumblr', name:'Tumblr', handle:'', limit:4096, color:'#36465D' },
+  { id:'discord', name:'Discord', handle:'', limit:2000, color:'#5865F2' },
+  { id:'telegram', name:'Telegram', handle:'@', limit:4096, color:'#26A5E4' },
+  { id:'whatsapp', name:'WhatsApp Business', handle:'', limit:1024, color:'#25D366' }
+];
+const ACCOUNTS = [
+  { id:'hsw', name:'Hill Sim Works', handle:'@hillsimworks', email:'hello@hillsimworks.com', color:'#0b2630',
+    socials:[
+      { platform:'x', handle:'@hillsimworks', connected:true, followers:4820 },
+      { platform:'instagram', handle:'@hillsimworks', connected:true, followers:12400 },
+      { platform:'facebook', handle:'HillSimWorks', connected:true, followers:3100 },
+      { platform:'linkedin', handle:'hill-sim-works', connected:true, followers:1890 },
+      { platform:'youtube', handle:'@HillSimWorks', connected:true, followers:2650 },
+      { platform:'threads', handle:'@hillsimworks', connected:true, followers:980 },
+      { platform:'bluesky', handle:'@hillsimworks.bsky.social', connected:false, followers:0 },
+      { platform:'discord', handle:'HSW Community', connected:true, followers:740 }
+    ],
+    inbox:[
+      { id:'e1', from:'PRYSM Motorsport', subject:'Livery approval for Spa', body:'Hi team,\n\nAttached is the final livery for the Spa 24hr. Please review.', date:'2026-10-28T09:12:00', folder:'inbox', read:false },
+      { id:'e2', from:'Stream Deck Support', subject:'Your iDeck integration', body:'Thanks for reaching out...', date:'2026-10-27T14:30:00', folder:'inbox', read:true }
+    ]
+  },
+  { id:'prysm', name:'PRYSM Motorsport', handle:'@prysmmotorsport', email:'team@prysmmotorsport.com', color:'#071a22',
+    socials:[
+      { platform:'x', handle:'@PRYSMMotorsport', connected:true, followers:18200 },
+      { platform:'instagram', handle:'@prysmmotorsport', connected:true, followers:24500 },
+      { platform:'tiktok', handle:'@prysmmotorsport', connected:true, followers:41000 }
+    ],
+    inbox:[ { id:'p1', from:'VCO', subject:'Daytona 24hr entry confirmation', body:'Your entry has been confirmed.', date:'2026-10-29T08:00:00', folder:'inbox', read:false } ]
+  }
+];
+const POSTS = [
+  { id:'post1', accountId:'hsw', text:'iDeck 1.4 is out. Per-key latency now 0.6ms.', platforms:['x','instagram','linkedin','threads'], status:'published', createdAt:'2026-10-27T10:00:00' }
+];
+window.HUB = { PLATFORMS, ACCOUNTS, POSTS };
+window.HUB.getActiveAccount = function(){ const id = localStorage.getItem('hub.activeAccount') || ACCOUNTS[0].id; return ACCOUNTS.find(a=>a.id===id) || ACCOUNTS[0]; };
+window.HUB.setActiveAccount = function(id){ localStorage.setItem('hub.activeAccount', id); };
+window.HUB.platform = function(id){ return PLATFORMS.find(p=>p.id===id); };
+
+/* inlined app.js */
+(function(){
+  const HUB = window.HUB;
+  const accountBtn = document.getElementById('accountBtn');
+  const accountMenu = document.getElementById('accountMenu');
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('backdrop');
+  const menuToggle = document.getElementById('menuToggle');
+  const themeToggle = document.getElementById('themeToggle');
+  function currentAccount(){ return HUB.getActiveAccount(); }
+  function renderAccountSwitcher(){
+    const acc = currentAccount();
+    if(accountBtn){ accountBtn.innerHTML = `<span class="acc-avatar" style="background:${acc.color}">${acc.name.charAt(0)}</span><span class="acc-info"><b>${acc.name}</b><small>${acc.handle}</small></span><svg class="acc-caret" width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`; }
+    if(accountMenu){ accountMenu.innerHTML = HUB.ACCOUNTS.map(a=>`<button class="acc-option ${a.id===acc.id?'is-active':''}" data-account-id="${a.id}"><span class="acc-avatar" style="background:${a.color}">${a.name.charAt(0)}</span><span class="acc-info"><b>${a.name}</b><small>${a.handle}</small></span></button>`).join(''); accountMenu.querySelectorAll('[data-account-id]').forEach(btn=>btn.addEventListener('click',()=>{ HUB.setActiveAccount(btn.dataset.accountId); location.reload(); })); }
+    document.querySelectorAll('[data-account-name]').forEach(el=>el.textContent=acc.name);
+    document.querySelectorAll('[data-account-handle]').forEach(el=>el.textContent=acc.handle);
+  }
+  if(accountBtn && accountMenu){ accountBtn.addEventListener('click', e=>{ e.stopPropagation(); accountMenu.hidden=!accountMenu.hidden; }); document.addEventListener('click', e=>{ if(!accountMenu.contains(e.target)&&e.target!==accountBtn) accountMenu.hidden=true; }); }
+  if(menuToggle && sidebar){ menuToggle.addEventListener('click', ()=>{ const open=sidebar.classList.toggle('is-open'); if(backdrop) backdrop.classList.toggle('is-open',open); menuToggle.setAttribute('aria-expanded',String(open)); }); }
+  if(backdrop){ backdrop.addEventListener('click', ()=>{ sidebar.classList.remove('is-open'); backdrop.classList.remove('is-open'); if(menuToggle) menuToggle.setAttribute('aria-expanded','false'); }); }
+  const storedTheme = localStorage.getItem('hub.theme') || 'light';
+  document.documentElement.setAttribute('data-theme', storedTheme);
+  if(themeToggle){ themeToggle.addEventListener('click', ()=>{ const cur=document.documentElement.getAttribute('data-theme'); const next=cur==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',next); localStorage.setItem('hub.theme',next); themeToggle.textContent=next==='dark'?'☀':'☾'; }); themeToggle.textContent=storedTheme==='dark'?'☀':'☾'; }
+  const acc = currentAccount();
+  const unread = acc.inbox.filter(e=>!e.read && e.folder==='inbox').length;
+  const badge = document.getElementById('inboxBadge');
+  if(badge){ badge.textContent=unread; badge.hidden=unread===0; }
+  renderAccountSwitcher();
+  const path = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(a=>{ if(a.getAttribute('href')===path) a.setAttribute('aria-current','page'); });
+})();
+</script>
+<script>
+(function(){
+  const HUB=window.HUB; const acc=HUB.getActiveAccount();
+  document.getElementById('statPosts').textContent = HUB.POSTS.filter(p=>p.accountId===acc.id).length;
+  document.getElementById('statPlatforms').textContent = acc.socials.filter(s=>s.connected).length;
+  document.getElementById('statUnread').textContent = acc.inbox.filter(e=>!e.read && e.folder==='inbox').length;
+  document.getElementById('statReach').textContent = acc.socials.reduce((a,s)=>a+(s.followers||0),0).toLocaleString();
+  const rp = document.getElementById('recentPosts');
+  const mine = HUB.POSTS.filter(p=>p.accountId===acc.id);
+  rp.innerHTML = mine.length ? mine.map(p=>`<div class="post-row"><div class="txt">${p.text}</div><div>${p.platforms.map(pl=>`<span class="chip">${HUB.platform(pl).name}</span>`).join(' ')}</div></div>`).join('') : '<div style="color:var(--muted);font-size:13px">No posts yet.</div>';
+  const ls = document.getElementById('linkedSocials');
+  ls.innerHTML = acc.socials.map(s=>`<div class="acc-social"><span class="social-dot" style="background:${HUB.platform(s.platform).color}"></span><span style="flex:1;font-size:13px">${HUB.platform(s.platform).name}</span><span style="font-size:12px;color:var(--muted-2)">${s.connected?s.handle:'not connected'}</span><span class="chip">${s.connected?'Live':'Off'}</span></div>`).join('');
+})();
+</script>
+</body>
+</html>

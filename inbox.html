@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HSW Hub — Inbox</title>
+<link rel="stylesheet" href="assets/css/hub.css">
+</head>
+<body>
+<button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<div class="sidebar-backdrop" id="backdrop"></div>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <a class="brand" href="index.html">HSW<span>Hub</span></a>
+    <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">☾</button>
+  </div>
+  <div class="account-switcher">
+    <button id="accountBtn" aria-haspopup="menu"></button>
+    <div id="accountMenu" class="account-menu" hidden></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Dashboard</a>
+    <a href="compose.html"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Compose</a>
+    <a href="inbox.html"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 8l9 6 9-6M3 8v10h18V8M3 8l9-4 9 4"/></svg>Inbox<span class="badge" id="inboxBadge" hidden>0</span></a>
+    <a href="accounts.html"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M17 11a3 3 0 1 0 0-6"/></svg>Accounts</a>
+    <a href="settings.html"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+  </nav>
+  <div class="sidebar-foot"><span>HSW Hub</span><a href="../index.html">HSW site ↗</a></div>
+</aside>
+
+<main class="main" style="padding-bottom:0">
+  <div class="page-head">
+    <div><h1>Inbox</h1><p>Emails for <b data-account-name></b> · <span data-account-email></span></p></div>
+    <input id="search" class="input" placeholder="Search emails…" style="max-width:260px">
+  </div>
+  <div class="inbox">
+    <div class="inbox-folders" id="folders"></div>
+    <div class="email-list" id="emailList"></div>
+    <div class="email-reader" id="reader"></div>
+  </div>
+</main>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/platforms.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/inbox.js"></script>
+</body>
+</html>

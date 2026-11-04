@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HSW Hub — Compose</title>
+<style>
+@font-face { font-family:'General Sans'; src:url('assets/fonts/general-sans-400.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'General Sans'; src:url('assets/fonts/general-sans-600.woff2') format('woff2'); font-weight:600; font-style:normal; font-display:swap; }
+@font-face { font-family:'Inter'; src:url('assets/fonts/inter-var.woff2') format('woff2-variations'); font-weight:100 900; font-style:normal; font-display:swap; }
+:root { --ice:#ebfdff; --paper:#ffffff; --ink:#071a22; --muted:#48646f; --muted-2:#5b7480; --line:#dcedf1; --line-strong:#c6e2e9; --azure:#1268e8; --azure-deep:#0b54c4; --azure-soft:#e7f1fe; --azure-wash:rgba(18,104,232,0.08); --font-display:'General Sans','Segoe UI',system-ui,sans-serif; --font-body:'Inter','Segoe UI',system-ui,sans-serif; --r-sm:10px; --r-md:14px; --r-lg:20px; --ease:cubic-bezier(0.22,0.61,0.36,1); --gutter:clamp(16px,3vw,32px); }
+[data-theme="dark"] { --ice:#0b1a22; --paper:#0f222c; --ink:#ebfdff; --muted:#9bb3bc; --muted-2:#7a9aa5; --line:#1c3a46; --line-strong:#2a4d5a; --azure:#4a9eff; --azure-deep:#7fc7ff; --azure-soft:#12304a; --azure-wash:rgba(74,158,255,0.12); }
+*{box-sizing:border-box} body{margin:0;background:var(--ice);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6;overflow-x:hidden} a{color:inherit;text-decoration:none}
+.app{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;background:rgba(255,255,255,0.6);backdrop-filter:blur(18px);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 14px;gap:14px}
+.sidebar-top{display:flex;align-items:center;justify-content:space-between;padding:4px 6px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:-0.03em;color:var(--ink)} .brand span{color:var(--azure)}
+.sidebar-nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-family:var(--font-display);font-size:14px;font-weight:500;color:var(--muted)}
+.sidebar-nav a[aria-current="page"]{background:var(--azure-wash);color:var(--ink)}
+.sidebar-nav a .nav-icon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;flex:none}
+.sidebar-nav a .badge{margin-left:auto;background:var(--azure);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px}
+.sidebar-foot{display:flex;align-items:center;justify-content:space-between;padding:8px 6px;border-top:1px solid var(--line);font-size:11px;color:var(--muted-2)}
+.theme-btn{background:none;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:14px;color:var(--ink)}
+.account-switcher{position:relative}
+#accountBtn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.acc-avatar{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;font-family:var(--font-display);font-weight:600;font-size:14px;flex:none}
+.acc-info{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1}
+.acc-info b{font-family:var(--font-display);font-size:13px;font-weight:600;color:var(--ink)} .acc-info small{font-size:11px;color:var(--muted-2)}
+.account-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:0 48px 96px -56px rgba(7,26,34,0.55);padding:6px;z-index:60}
+.account-menu[hidden]{display:none}
+.acc-option{width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;border:none;background:none;text-align:left}
+.acc-option:hover{background:var(--azure-wash)}
+.main{padding:24px var(--gutter) 48px;min-width:0}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.page-head h1{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:600;letter-spacing:-0.03em;color:var(--ink)}
+.page-head p{color:var(--muted);font-size:14px;margin-top:4px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:0 1px 0 rgba(7,26,34,0.02),0 10px 24px -18px rgba(7,26,34,0.3);padding:20px}
+.compose{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:20px;align-items:start}
+@media(max-width:1000px){.compose{grid-template-columns:1fr}}
+.compose-left{display:flex;flex-direction:column;gap:16px}
+.compose-right{position:sticky;top:24px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-2)}
+.input,.textarea{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font-size:14px}
+.textarea{min-height:120px;resize:vertical;font-family:var(--font-body)}
+.plat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.plat-chip{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--paper);cursor:pointer;font-size:13px}
+.plat-chip.is-on{border-color:var(--azure);background:var(--azure-wash)}
+.plat-chip .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.plat-chip .handle{font-size:11px;color:var(--muted-2);margin-left:auto}
+.plat-chip input{display:none}
+.preview-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.preview-tab{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-size:12px;font-weight:500;cursor:pointer}
+.preview-tab.is-active{border-color:var(--azure);background:var(--azure-wash);color:var(--azure-deep)}
+.preview-stage{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;min-height:300px;max-height:70vh;overflow:auto}
+.pv-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;color:var(--ink)}
+.pv-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pv-avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:600;font-size:13px;flex:none}
+.pv-head b{font-size:13px;font-weight:600;display:block} .pv-head span{font-size:11px;color:var(--muted-2)}
+.pv-text{margin:6px 0;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.pv-media{background:linear-gradient(135deg,var(--azure-soft),var(--ice));border-radius:8px;display:grid;place-items:center;color:var(--muted-2);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin:8px 0;aspect-ratio:16/9}
+.pv-actions{display:flex;gap:14px;font-size:11px;color:var(--muted-2);margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+.pv-empty{color:var(--muted);font-size:13px;padding:20px;text-align:center}
+.btn{position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border:1px solid transparent;border-radius:11px;font-family:var(--font-display);font-size:14px;font-weight:500;white-space:nowrap;transition:color .28s var(--ease),border-color .28s var(--ease),background-color .28s var(--ease),transform .18s var(--ease)}
+.btn::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,#1268e8 0%,rgba(18,104,232,0.94) 42%,rgba(18,104,232,0.4) 76%,rgba(18,104,232,0) 100%);transform:translateY(101%);transition:transform .5s var(--ease)}
+.btn:hover::before{transform:translateY(0)} .btn:active{transform:translateY(1px)}
+.btn--primary{background:var(--ink);border-color:var(--ink);color:#fff} .btn--ghost{background:var(--paper);border-color:var(--line-strong);color:var(--ink)} .btn--sm{height:36px;padding:0 14px;font-size:13px;border-radius:9px}
+.menu-toggle{display:none}
+@media(max-width:760px){.menu-toggle{display:grid}.app{grid-template-columns:1fr}.sidebar{position:fixed;left:-280px;top:0;transition:left .25s var(--ease)}.sidebar.is-open{left:0}.main{padding-top:64px}}
+@media(max-width:760px){.sidebar-backdrop{position:fixed;inset:0;background:rgba(7,26,34,0.4);z-index:40;opacity:0;pointer-events:none;transition:opacity .25s}.sidebar-backdrop.is-open{opacity:1;pointer-events:auto}.menu-toggle{position:fixed;top:14px;left:14px;z-index:70;width:42px;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--paper);display:grid;place-items:center}}
+</style>
+</head>
+<body>
+<button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<div class="sidebar-backdrop" id="backdrop"></div>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <a class="brand" href="index.html">HSW<span>Hub</span></a>
+    <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">☾</button>
+  </div>
+  <div class="account-switcher">
+    <button id="accountBtn" aria-haspopup="menu"></button>
+    <div id="accountMenu" class="account-menu" hidden></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Dashboard</a>
+    <a href="compose.html" aria-current="page"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Compose</a>
+    <a href="inbox.html"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 8l9 6 9-6M3 8v10h18V8M3 8l9-4 9 4"/></svg>Inbox<span class="badge" id="inboxBadge" hidden>0</span></a>
+    <a href="accounts.html"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M17 11a3 3 0 1 0 0-6"/></svg>Accounts</a>
+    <a href="settings.html"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+  </nav>
+  <div class="sidebar-foot"><span>HSW Hub</span><a href="../index.html">HSW site ↗</a></div>
+</aside>
+
+<main class="main">
+  <div class="page-head">
+    <div><h1>Compose</h1><p>Post to multiple socials at once. Preview updates live on the right.</p></div>
+  </div>
+  <div class="compose">
+    <div class="compose-left">
+      <div class="card">
+        <div class="field">
+          <label for="composeText">Post content</label>
+          <textarea id="composeText" class="textarea" placeholder="What's happening?"></textarea>
+          <div style="margin-top:10px">
+            <button type="button" id="attachBtn" aria-label="Attach image" style="width:100%;min-height:80px;border:2px dashed var(--line-strong);border-radius:12px;background:var(--ice-soft);display:grid;place-items:center;cursor:pointer;color:var(--muted);gap:4px;padding:12px">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase">Attach image</span>
+              <span style="font-size:11px;color:var(--muted-2)">Click to choose a file from your device</span>
+            </button>
+            <input type="file" id="fileInput" accept="image/*" style="display:none">
+          </div>
+          <div id="attachPreview" style="margin-top:8px;display:none">
+            <img id="attachImg" style="max-height:120px;border-radius:8px;border:1px solid var(--line)">
+            <button type="button" id="removeAttach" style="margin-left:8px;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer">Remove</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted-2)"><span id="charCount">0</span> <span id="charWarn"></span></div>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>Media</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)"><input type="checkbox" id="hasMedia"> Attach image (mock)</label>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>Schedule</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)"><input type="checkbox" id="scheduleToggle"> Schedule for later</label>
+          <input type="datetime-local" id="scheduleField" class="input" style="margin-top:6px" hidden>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-family:var(--font-display);font-size:1.05rem;margin-bottom:10px">Platforms</h3>
+        <div class="plat-grid" id="platGrid"></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn--primary" id="postBtn">Post now</button>
+        <button class="btn btn--ghost">Save draft</button>
+      </div>
+    </div>
+    <div class="compose-right">
+      <div class="preview-tabs" id="previewTabs"></div>
+      <div class="preview-stage" id="previewStage"></div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+const PLATFORMS = [
+  { id:'x', name:'X', limit:280, color:'#000000' },
+  { id:'instagram', name:'Instagram', limit:2200, color:'#E4405F' },
+  { id:'facebook', name:'Facebook', limit:63206, color:'#1877F2' },
+  { id:'linkedin', name:'LinkedIn', limit:3000, color:'#0A66C2' },
+  { id:'tiktok', name:'TikTok', limit:2200, color:'#000000' },
+  { id:'youtube', name:'YouTube', limit:5000, color:'#FF0000' },
+  { id:'threads', name:'Threads', limit:500, color:'#000000' },
+  { id:'pinterest', name:'Pinterest', limit:500, color:'#E60023' },
+  { id:'bluesky', name:'Bluesky', limit:300, color:'#0085FF' },
+  { id:'mastodon', name:'Mastodon', limit:500, color:'#6364FF' },
+  { id:'reddit', name:'Reddit', limit:40000, color:'#FF4500' },
+  { id:'snapchat', name:'Snapchat', limit:250, color:'#FFFC00' },
+  { id:'tumblr', name:'Tumblr', limit:4096, color:'#36465D' },
+  { id:'discord', name:'Discord', limit:2000, color:'#5865F2' },
+  { id:'telegram', name:'Telegram', limit:4096, color:'#26A5E4' },
+  { id:'whatsapp', name:'WhatsApp Business', limit:1024, color:'#25D366' }
+];
+const ACCOUNTS = [
+  { id:'hsw', name:'Hill Sim Works', handle:'@hillsimworks', email:'hello@hillsimworks.com', color:'#0b2630',
+    socials:[
+      { platform:'x', handle:'@hillsimworks', connected:true },
+      { platform:'instagram', handle:'@hillsimworks', connected:true },
+      { platform:'facebook', handle:'HillSimWorks', connected:true },
+      { platform:'linkedin', handle:'hill-sim-works', connected:true },
+      { platform:'youtube', handle:'@HillSimWorks', connected:true },
+      { platform:'threads', handle:'@hillsimworks', connected:true },
+      { platform:'discord', handle:'HSW Community', connected:true }
+    ]
+  }
+];
+window.HUB = { PLATFORMS, ACCOUNTS };
+window.HUB.getActiveAccount = function(){ const id = localStorage.getItem('hub.activeAccount') || ACCOUNTS[0].id; return ACCOUNTS.find(a=>a.id===id) || ACCOUNTS[0]; };
+window.HUB.platform = function(id){ return PLATFORMS.find(p=>p.id===id); };
+
+/* app shell */
+(function(){
+  const HUB=window.HUB;
+  const accountBtn=document.getElementById('accountBtn'), accountMenu=document.getElementById('accountMenu');
+  const sidebar=document.getElementById('sidebar'), backdrop=document.getElementById('backdrop');
+  const menuToggle=document.getElementById('menuToggle'), themeToggle=document.getElementById('themeToggle');
+  function currentAccount(){ return HUB.getActiveAccount(); }
+  function renderAccountSwitcher(){
+    const acc=currentAccount();
+    if(accountBtn){ accountBtn.innerHTML=`<span class="acc-avatar" style="background:${acc.color}">${acc.name.charAt(0)}</span><span class="acc-info"><b>${acc.name}</b><small>${acc.handle}</small></span>`; }
+    if(accountMenu){ accountMenu.innerHTML=HUB.ACCOUNTS.map(a=>`<button class="acc-option" data-account-id="${a.id}"><span class="acc-avatar" style="background:${a.color}">${a.name.charAt(0)}</span><span class="acc-info"><b>${a.name}</b><small>${a.handle}</small></span></button>`).join(''); accountMenu.querySelectorAll('[data-account-id]').forEach(btn=>btn.addEventListener('click',()=>{ HUB.setActiveAccount(btn.dataset.accountId); location.reload(); })); }
+    document.querySelectorAll('[data-account-name]').forEach(el=>el.textContent=acc.name);
+  }
+  if(accountBtn&&accountMenu){ accountBtn.addEventListener('click',e=>{e.stopPropagation();accountMenu.hidden=!accountMenu.hidden;}); document.addEventListener('click',e=>{if(!accountMenu.contains(e.target)&&e.target!==accountBtn)accountMenu.hidden=true;}); }
+  if(menuToggle&&sidebar){ menuToggle.addEventListener('click',()=>{const open=sidebar.classList.toggle('is-open');if(backdrop)backdrop.classList.toggle('is-open',open);menuToggle.setAttribute('aria-expanded',String(open));}); }
+  if(backdrop){ backdrop.addEventListener('click',()=>{sidebar.classList.remove('is-open');backdrop.classList.remove('is-open');if(menuToggle)menuToggle.setAttribute('aria-expanded','false');}); }
+  const stored=localStorage.getItem('hub.theme')||'light'; document.documentElement.setAttribute('data-theme',stored);
+  if(themeToggle){ themeToggle.addEventListener('click',()=>{const cur=document.documentElement.getAttribute('data-theme');const next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);localStorage.setItem('hub.theme',next);themeToggle.textContent=next==='dark'?'☀':'☾';}); themeToggle.textContent=stored==='dark'?'☀':'☾'; }
+  const acc=currentAccount(); const unread=0; const badge=document.getElementById('inboxBadge'); if(badge){badge.textContent=unread;badge.hidden=unread===0;}
+  renderAccountSwitcher();
+  const path=location.pathname.split('/').pop()||'index.html';
+  document.querySelectorAll('.sidebar-nav a').forEach(a=>{if(a.getAttribute('href')===path)a.setAttribute('aria-current','page');});
+})();
+
+/* compose logic */
+(function(){
+  const HUB=window.HUB; const acc=HUB.getActiveAccount();
+  const textarea=document.getElementById('composeText');
+  const charCount=document.getElementById('charCount');
+  const platGrid=document.getElementById('platGrid');
+  const hasMediaEl=document.getElementById('hasMedia');
+  const previewTabs=document.getElementById('previewTabs');
+  const previewStage=document.getElementById('previewStage');
+  const scheduleToggle=document.getElementById('scheduleToggle');
+  const scheduleField=document.getElementById('scheduleField');
+  let selected=new Set(acc.socials.filter(s=>s.connected).map(s=>s.platform));
+  let hasMedia=false;
+  function renderPlatGrid(){
+    platGrid.innerHTML=acc.socials.map(s=>{const p=HUB.platform(s.platform);const on=selected.has(s.platform);return `<label class="plat-chip ${on?'is-on':''}" data-plat="${s.platform}"><input type="checkbox" ${on?'checked':''}><span class="dot" style="background:${p.color}"></span><span>${p.name}</span><span class="handle">${s.handle}</span></label>`;}).join('');
+    platGrid.querySelectorAll('.plat-chip').forEach(chip=>{chip.addEventListener('click',e=>{e.preventDefault();const id=chip.dataset.plat;if(selected.has(id))selected.delete(id);else selected.add(id);chip.classList.toggle('is-on',selected.has(id));chip.querySelector('input').checked=selected.has(id);renderTabs();});});
+  }
+  function renderTabs(){
+    const ids=[...selected];
+    previewTabs.innerHTML=ids.map((id,i)=>`<button class="preview-tab ${i===0?'is-active':''}" data-tab="${id}">${HUB.platform(id).name}</button>`).join('')||'<span class="pv-empty">Select a platform to preview.</span>';
+    previewTabs.querySelectorAll('.preview-tab').forEach(t=>t.addEventListener('click',()=>{previewTabs.querySelectorAll('.preview-tab').forEach(x=>x.classList.remove('is-active'));t.classList.add('is-active');showPreview(t.dataset.tab);}));
+    if(ids.length)showPreview(ids[0]); else previewStage.innerHTML='<div class="pv-empty">No platforms selected.</div>';
+  }
+  function showPreview(id){
+    const text=textarea.value; const p=HUB.platform(id);
+    const media=hasMedia?`<div class="pv-media"></div>`:'';
+    previewStage.innerHTML=`<div class="pv-card"><div class="pv-head"><span class="pv-avatar" style="background:${acc.color}">${acc.name.charAt(0)}</span><div><b>${acc.name}</b><span>${acc.handle}</span></div></div><p class="pv-text">${text||'Your post will appear here...'}</p>${media}<div class="pv-actions"><span>Like</span><span>Comment</span><span>Share</span></div></div><div style="margin-top:8px;font-size:11px;color:var(--muted-2)">${text.length}/${p.limit} chars</div>`;
+  }
+  function updateCount(){ charCount.textContent=textarea.value.length; }
+  textarea.addEventListener('input',()=>{updateCount();const active=previewTabs.querySelector('.preview-tab.is-active');if(active)showPreview(active.dataset.tab);});
+  if(hasMediaEl){ hasMediaEl.addEventListener('change',()=>{hasMedia=hasMediaEl.checked;const active=previewTabs.querySelector('.preview-tab.is-active');if(active)showPreview(active.dataset.tab);}); }
+  if(scheduleToggle&&scheduleField){ scheduleToggle.addEventListener('change',()=>{scheduleField.hidden=!scheduleToggle.checked;}); }
+  const attachBtn=document.getElementById('attachBtn');
+  const fileInput=document.getElementById('fileInput');
+  const attachPreview=document.getElementById('attachPreview');
+  const attachImg=document.getElementById('attachImg');
+  const removeAttach=document.getElementById('removeAttach');
+  if(attachBtn&&fileInput){ attachBtn.addEventListener('click',()=>fileInput.click()); }
+  if(fileInput){ fileInput.addEventListener('change',()=>{ const f=fileInput.files&&fileInput.files[0]; if(!f) return; const url=URL.createObjectURL(f); attachImg.src=url; attachPreview.style.display='block'; hasMedia=true; const active=previewTabs.querySelector('.preview-tab.is-active'); if(active) showPreview(active.dataset.tab); }); }
+  if(removeAttach){ removeAttach.addEventListener('click',()=>{ fileInput.value=''; attachPreview.style.display='none'; attachImg.src=''; hasMedia=false; const active=previewTabs.querySelector('.preview-tab.is-active'); if(active) showPreview(active.dataset.tab); }); }
+  document.getElementById('postBtn')?.addEventListener('click',()=>{ const text=textarea.value.trim(); if(!text && !hasMedia){alert('Write something or attach an image first.');return;} if(selected.size===0){alert('Select at least one platform.');return;} alert('Posted to '+selected.size+' platform(s). (mock)'); textarea.value=''; fileInput.value=''; attachPreview.style.display='none'; hasMedia=false; renderPlatGrid(); renderTabs(); });
+  renderPlatGrid(); renderTabs(); updateCount();
+})();
+</script>
+</body>
+</html>
