@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="assets/img/logos/favicon.png" type="image/png">
 <title>HSW Hub — Accounts</title>
-<link rel="stylesheet" href="assets/css/hub.css?v=6">
+<link rel="stylesheet" href="assets/css/hub.css?v=7">
 </head>
 <body>
 <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -39,9 +39,9 @@
 </main>
 </div>
 
-<script src="assets/js/data.js?v=6"></script>
-<script src="assets/js/platforms.js?v=6"></script>
-<script src="assets/js/app.js?v=6"></script>
+<script src="assets/js/data.js?v=7"></script>
+<script src="assets/js/platforms.js?v=7"></script>
+<script src="assets/js/app.js?v=7"></script>
 <script>
 (function(){
   const HUB=window.HUB;
@@ -86,20 +86,7 @@
       });
     });
   }
-  const addBtn=document.getElementById('addAccountBtn');
-  if(addBtn){ addBtn.addEventListener('click',()=>{
-    const name=prompt('Account name (e.g. your brand):');
-    if(!name) return;
-    const handle=prompt('Handle (e.g. @yourbrand):')||'';
-    const email=prompt('Email:')||'';
-    const id='acc_'+Date.now();
-    const color='#'+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0');
-    const acc={id,name,handle,email,color,socials:[],inbox:[]};
-    HUB.ACCOUNTS.push(acc);
-    try{ localStorage.setItem('hub.accounts', JSON.stringify(HUB.ACCOUNTS)); }catch(e){}
-    HUB.setActiveAccount(id);
-    location.reload();
-  }); }
+
   try{
     const saved=JSON.parse(localStorage.getItem('hub.accounts')||'null');
     if(Array.isArray(saved)){
