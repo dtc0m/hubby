@@ -173,15 +173,34 @@
   }
   if(closeBtn) closeBtn.addEventListener('click', closeModal);
   if(cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  const OAUTH_URLS = {
+    x:'https://twitter.com/i/flow/login', instagram:'https://www.instagram.com/accounts/login/',
+    facebook:'https://www.facebook.com/login/', linkedin:'https://www.linkedin.com/login',
+    tiktok:'https://www.tiktok.com/login', youtube:'https://accounts.google.com/signin',
+    threads:'https://www.threads.net/login', pinterest:'https://www.pinterest.com/login/',
+    bluesky:'https://bsky.app/', mastodon:'https://mastodon.social/auth/sign_in',
+    reddit:'https://www.reddit.com/login/', snapchat:'https://accounts.snapchat.com/accounts/login',
+    tumblr:'https://www.tumblr.com/login', discord:'https://discord.com/login',
+    telegram:'https://web.telegram.org/', whatsapp:'https://web.whatsapp.com/'
+  };
   if(authBtn) authBtn.addEventListener('click', ()=>{
     const acc=HUB.getActiveAccount();
     if(!acc || !chosenPlatform) return;
     const p=HUB.platform(chosenPlatform);
-    acc.socials.push({ platform:chosenPlatform, handle: acc.handle, connected:true, followers:0 });
-    try{ localStorage.setItem('hub.accounts', JSON.stringify(HUB.ACCOUNTS)); }catch(e){}
-    try{ const saved=JSON.parse(localStorage.getItem('hub.connected')||'{}'); saved[acc.id]=saved[acc.id]||{}; saved[acc.id][chosenPlatform]=true; localStorage.setItem('hub.connected',JSON.stringify(saved)); }catch(e){}
-    closeModal();
-    location.reload();
+    const url = OAUTH_URLS[chosenPlatform] || 'https://example.com';
+    // open real platform login in a popup
+    const popup = window.open(url, 'oauth_'+chosenPlatform, 'width=520,height=640,menubar=no,toolbar=no');
+    // mark as connected after user closes popup (best-effort on static front-end)
+    const check = setInterval(()=>{
+      if(popup && popup.closed){
+        clearInterval(check);
+        acc.socials.push({ platform:chosenPlatform, handle: acc.handle, connected:true, followers:0 });
+        try{ localStorage.setItem('hub.accounts', JSON.stringify(HUB.ACCOUNTS)); }catch(e){}
+        try{ const saved=JSON.parse(localStorage.getItem('hub.connected')||'{}'); saved[acc.id]=saved[acc.id]||{}; saved[acc.id][chosenPlatform]=true; localStorage.setItem('hub.connected',JSON.stringify(saved)); }catch(e){}
+        closeModal();
+        location.reload();
+      }
+    }, 800);
   });
   const connectBtn=document.getElementById('connectSocialBtn');
   if(connectBtn) connectBtn.addEventListener('click', openModal);
