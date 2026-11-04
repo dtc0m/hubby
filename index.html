@@ -147,34 +147,11 @@ const PLATFORMS = [
   { id:'whatsapp', name:'WhatsApp Business', handle:'', limit:1024, color:'#25D366' }
 ];
 const ACCOUNTS = [
-  { id:'hsw', name:'Hill Sim Works', handle:'@hillsimworks', email:'hello@hillsimworks.com', color:'#0b2630',
-    socials:[
-      { platform:'x', handle:'@hillsimworks', connected:true, followers:4820 },
-      { platform:'instagram', handle:'@hillsimworks', connected:true, followers:12400 },
-      { platform:'facebook', handle:'HillSimWorks', connected:true, followers:3100 },
-      { platform:'linkedin', handle:'hill-sim-works', connected:true, followers:1890 },
-      { platform:'youtube', handle:'@HillSimWorks', connected:true, followers:2650 },
-      { platform:'threads', handle:'@hillsimworks', connected:true, followers:980 },
-      { platform:'bluesky', handle:'@hillsimworks.bsky.social', connected:false, followers:0 },
-      { platform:'discord', handle:'HSW Community', connected:true, followers:740 }
-    ],
-    inbox:[
-      { id:'e1', from:'PRYSM Motorsport', subject:'Livery approval for Spa', body:'Hi team,\n\nAttached is the final livery for the Spa 24hr. Please review.', date:'2026-10-28T09:12:00', folder:'inbox', read:false },
-      { id:'e2', from:'Stream Deck Support', subject:'Your iDeck integration', body:'Thanks for reaching out...', date:'2026-10-27T14:30:00', folder:'inbox', read:true }
-    ]
-  },
-  { id:'prysm', name:'PRYSM Motorsport', handle:'@prysmmotorsport', email:'team@prysmmotorsport.com', color:'#071a22',
-    socials:[
-      { platform:'x', handle:'@PRYSMMotorsport', connected:true, followers:18200 },
-      { platform:'instagram', handle:'@prysmmotorsport', connected:true, followers:24500 },
-      { platform:'tiktok', handle:'@prysmmotorsport', connected:true, followers:41000 }
-    ],
-    inbox:[ { id:'p1', from:'VCO', subject:'Daytona 24hr entry confirmation', body:'Your entry has been confirmed.', date:'2026-10-29T08:00:00', folder:'inbox', read:false } ]
-  }
-];
-const POSTS = [
-  { id:'post1', accountId:'hsw', text:'iDeck 1.4 is out. Per-key latency now 0.6ms.', platforms:['x','instagram','linkedin','threads'], status:'published', createdAt:'2026-10-27T10:00:00' }
-];
+    { id:'hsw', name:'Hill Sim Works', handle:'@hillsimworks', email:'hello@hillsimworks.com', color:'#0b2630', socials:[], inbox:[] },
+    { id:'prysm', name:'PRYSM Motorsport', handle:'@prysmmotorsport', email:'team@prysmmotorsport.com', color:'#071a22', socials:[], inbox:[] }
+  ];
+  const POSTS = [];
+
 window.HUB = { PLATFORMS, ACCOUNTS, POSTS };
 window.HUB.getActiveAccount = function(){ const id = localStorage.getItem('hub.activeAccount') || ACCOUNTS[0].id; return ACCOUNTS.find(a=>a.id===id) || ACCOUNTS[0]; };
 window.HUB.setActiveAccount = function(id){ localStorage.setItem('hub.activeAccount', id); };
