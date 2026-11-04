@@ -150,7 +150,7 @@ const ACCOUNTS = [];
   const POSTS = [];
 
 
-try { if (localStorage.getItem('hub.version') !== '4') { localStorage.removeItem('hub.connected'); localStorage.removeItem('hub.activeAccount'); localStorage.removeItem('hub.accounts'); localStorage.setItem('hub.version','4'); } } catch(e){}
+try { if (localStorage.getItem('hub.version') !== '5') { localStorage.removeItem('hub.connected'); localStorage.removeItem('hub.activeAccount'); localStorage.removeItem('hub.accounts'); localStorage.setItem('hub.version','5'); } } catch(e){}
 window.HUB = { PLATFORMS, ACCOUNTS, POSTS };
 window.HUB.getActiveAccount = function(){ const id = localStorage.getItem('hub.activeAccount'); if(id){const a=ACCOUNTS.find(x=>x.id===id); if(a) return a;} return ACCOUNTS.length?ACCOUNTS[0]:null; };
 window.HUB.setActiveAccount = function(id){ localStorage.setItem('hub.activeAccount', id); };

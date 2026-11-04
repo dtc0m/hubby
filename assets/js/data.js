@@ -20,11 +20,21 @@
   ];
 
   const ACCOUNTS = [];
+  // strip any stale mock accounts that may have been persisted
+  try {
+    const saved = JSON.parse(localStorage.getItem('hub.accounts') || 'null');
+    if (Array.isArray(saved)) {
+      const clean = saved.filter(a => !['hsw','prysm','adxd','v1','hrw'].includes(a.id));
+      if (clean.length !== saved.length) {
+        localStorage.setItem('hub.accounts', JSON.stringify(clean));
+      }
+    }
+  } catch(e) {}
 
   const POSTS = [];
 
   // clear stale saved state from previous mock version
-  try { if (localStorage.getItem('hub.version') !== '4') { localStorage.removeItem('hub.connected'); localStorage.removeItem('hub.activeAccount'); localStorage.removeItem('hub.accounts'); localStorage.setItem('hub.version','4'); } } catch(e){}
+  try { if (localStorage.getItem('hub.version') !== '5') { localStorage.removeItem('hub.connected'); localStorage.removeItem('hub.activeAccount'); localStorage.removeItem('hub.accounts'); localStorage.setItem('hub.version','5'); } } catch(e){}
   window.HUB = { PLATFORMS, ACCOUNTS, POSTS };
   window.HUB.getActiveAccount = function () {
     const id = localStorage.getItem('hub.activeAccount');
