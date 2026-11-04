@@ -68,7 +68,7 @@
             <span style="font-size:12px;color:var(--muted-2)">${s.handle}</span>
             <button class="toggle ${s.connected?'is-on':''}" data-toggle="${a.id}:${s.platform}" aria-label="toggle"></button>
           </div>`).join('')}
-        <div style="margin-top:12px"><button class="btn btn--ghost btn--sm">+ Connect social</button></div>
+        <div style="margin-top:12px"><button class="btn btn--ghost btn--sm" id="connectSocialBtn">+ Connect social</button></div>
       </div>`).join('');
     cards.querySelectorAll('[data-switch]').forEach(b=>b.addEventListener('click',()=>{ HUB.setActiveAccount(b.dataset.switch); location.reload(); }));
     cards.querySelectorAll('[data-toggle]').forEach(b=>{
@@ -111,6 +111,131 @@
       }
     }
   }catch(e){}
+  render();
+})();
+</script>
+<div id="oauthModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(7,26,34,0.5);align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--paper);border-radius:var(--r-lg);max-width:420px;width:100%;padding:24px;box-shadow:var(--shadow-lg)">
+    <div id="oauthStep1">
+      <h3 style="font-family:var(--font-display);font-size:1.2rem;margin-bottom:6px">Connect a social account</h3>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:16px">Choose a platform to link to this account.</p>
+      <div id="platformPicker" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+      <div style="margin-top:16px;text-align:right"><button class="btn btn--ghost btn--sm" id="closeModal">Cancel</button></div>
+    </div>
+    <div id="oauthStep2" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span id="oauthIcon" style="width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:700"></span>
+        <div><b id="oauthName" style="font-family:var(--font-display)"></b><div style="font-size:12px;color:var(--muted-2)">wants to access your account</div></div>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Hubby will be able to post content and read basic profile info on your behalf. You can revoke access anytime.</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn--ghost btn--sm" id="oauthCancel">Cancel</button>
+        <button class="btn btn--primary btn--sm" id="oauthAuthorize">Authorize</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const HUB=window.HUB;
+  const activeAcc = HUB.getActiveAccount();
+  const activeId = activeAcc ? activeAcc.id : null;
+
+  const modal=document.getElementById('oauthModal');
+  const step1=document.getElementById('oauthStep1');
+  const step2=document.getElementById('oauthStep2');
+  const picker=document.getElementById('platformPicker');
+  const closeBtn=document.getElementById('closeModal');
+  const cancelBtn=document.getElementById('oauthCancel');
+  const authBtn=document.getElementById('oauthAuthorize');
+  let chosenPlatform=null;
+
+  function openModal(){ modal.style.display='flex'; step1.style.display='block'; step2.style.display='none'; renderPicker(); }
+  function closeModal(){ modal.style.display='none'; chosenPlatform=null; }
+  function renderPicker(){
+    const acc=HUB.getActiveAccount();
+    const connected=new Set(acc?acc.socials.map(s=>s.platform):[]);
+    picker.innerHTML=HUB.PLATFORMS.map(p=>`
+      <button class="plat-chip" data-pick="${p.id}" style="justify-content:center;${connected.has(p.id)?'opacity:0.4;pointer-events:none':''}">
+        <span class="dot" style="background:${p.color}"></span>
+        <span>${p.name}</span>
+      </button>`).join('');
+    picker.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{
+      chosenPlatform=b.dataset.pick;
+      const p=HUB.platform(chosenPlatform);
+      document.getElementById('oauthIcon').style.background=p.color;
+      document.getElementById('oauthIcon').textContent=p.name.charAt(0);
+      document.getElementById('oauthName').textContent=p.name;
+      step1.style.display='none';
+      step2.style.display='block';
+    }));
+  }
+  if(closeBtn) closeBtn.addEventListener('click', closeModal);
+  if(cancelBtn) cancelBtn.addEventListener('click', closeModal);
+  if(authBtn) authBtn.addEventListener('click', ()=>{
+    const acc=HUB.getActiveAccount();
+    if(!acc || !chosenPlatform) return;
+    const p=HUB.platform(chosenPlatform);
+    acc.socials.push({ platform:chosenPlatform, handle: acc.handle, connected:true, followers:0 });
+    try{ localStorage.setItem('hub.accounts', JSON.stringify(HUB.ACCOUNTS)); }catch(e){}
+    try{ const saved=JSON.parse(localStorage.getItem('hub.connected')||'{}'); saved[acc.id]=saved[acc.id]||{}; saved[acc.id][chosenPlatform]=true; localStorage.setItem('hub.connected',JSON.stringify(saved)); }catch(e){}
+    closeModal();
+    location.reload();
+  });
+  const connectBtn=document.getElementById('connectSocialBtn');
+  if(connectBtn) connectBtn.addEventListener('click', openModal);
+  modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+
+  // restore persisted accounts
+  try{
+    const saved=JSON.parse(localStorage.getItem('hub.accounts')||'null');
+    if(Array.isArray(saved)){
+      const clean=saved.filter(a=>!['hsw','prysm','adxd','v1','hrw'].includes(a.id));
+      if(clean.length!==saved.length){ localStorage.setItem('hub.accounts', JSON.stringify(clean)); }
+      if(clean.length && HUB.ACCOUNTS.length===0){ clean.forEach(a=>HUB.ACCOUNTS.push(a)); }
+    }
+  }catch(e){}
+
+  const cards=document.getElementById('accountCards');
+  function render(){
+    if(HUB.ACCOUNTS.length===0){ cards.innerHTML='<div class="card" style="max-width:560px"><p style="color:var(--muted)">No accounts yet. Click "+ Add account" to create one.</p></div>'; return; }
+    cards.innerHTML = HUB.ACCOUNTS.map(a=>`
+      <div class="account-card ${a.id===activeId?'is-active':''}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="acc-avatar" style="background:${a.color};width:40px;height:40px;border-radius:10px;font-size:16px;display:grid;place-items:center;color:#fff;font-family:var(--font-display);font-weight:600">${a.name.charAt(0)}</span>
+            <div><b style="font-family:var(--font-display);font-size:1.05rem">${a.name}</b><div style="font-size:12px;color:var(--muted-2)">${a.handle} · ${a.email}</div></div>
+          </div>
+          ${a.id!==activeId?`<button class="btn btn--ghost btn--sm" data-switch="${a.id}">Switch</button>`:`<span class="chip">Active</span>`}
+        </div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-2);margin:10px 0 6px">Linked socials</div>
+        ${a.socials.length?a.socials.map(s=>`
+          <div class="acc-social">
+            <span class="social-dot" style="background:${HUB.platform(s.platform).color}"></span>
+            <span style="flex:1;font-size:13px">${HUB.platform(s.platform).name}</span>
+            <span style="font-size:12px;color:var(--muted-2)">${s.handle}</span>
+            <button class="toggle ${s.connected?'is-on':''}" data-toggle="${a.id}:${s.platform}" aria-label="toggle"></button>
+          </div>`).join(''):'<div style="font-size:13px;color:var(--muted);padding:8px 0">No socials connected yet.</div>'}
+        <div style="margin-top:12px"><button class="btn btn--ghost btn--sm" id="connectSocialBtn">+ Connect social</button></div>
+      </div>`).join('');
+    cards.querySelectorAll('[data-switch]').forEach(b=>b.addEventListener('click',()=>{ HUB.setActiveAccount(b.dataset.switch); location.reload(); }));
+    cards.querySelectorAll('[data-toggle]').forEach(b=>{
+      b.addEventListener('click',()=>{
+        const [aid,pid]=b.dataset.toggle.split(':');
+        const acc=HUB.ACCOUNTS.find(a=>a.id===aid);
+        const s=acc.socials.find(x=>x.platform===pid);
+        s.connected=!s.connected;
+        const saved=JSON.parse(localStorage.getItem('hub.connected')||'{}');
+        saved[aid]=saved[aid]||{};
+        saved[aid][pid]=s.connected;
+        localStorage.setItem('hub.connected',JSON.stringify(saved));
+        b.classList.toggle('is-on',s.connected);
+      });
+    });
+    const cb=document.getElementById('connectSocialBtn');
+    if(cb) cb.addEventListener('click', openModal);
+  }
   render();
 })();
 </script>
